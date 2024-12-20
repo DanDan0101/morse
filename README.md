@@ -10,6 +10,10 @@ Morse code decoder for the [BF1 easter eggs](https://wiki.gamedetectives.net/ind
 
 ## Usage
 
-This code is intended for `.wav` files. The Morse code should be pitched around $790\,\mathrm{Hz}$, with a base time unit of around $60\,\mathrm{ms}$, though these can easily be tweaked by chaging the appropriate global variables in `main.py`.
+This code is intended for `.wav` files, with Morse transmitted at 20 wpm. To use, run `python main.py [PATH_TO_AUDIO]` in the command line. A few characters may be wrong due to noise in the recording.
 
-To use, run `python main.py [PATH_TO_AUDIO]` in the command line.
+## Features
+
+* Pitch detection
+* Timing detection, for time units 40-120 ms (10-30 wpm) [TODO]
+* Denoising [TODO]
