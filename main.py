@@ -11,8 +11,10 @@ parser = argparse.ArgumentParser(
     epilog = "Hacked together by Daniel Sun"
 )
 parser.add_argument("filename", type = Path)
+parser.add_argument("pitch", type = float, default = 790.5)
 args = parser.parse_args()
 file = args.filename.expanduser().resolve()
+F = args.pitch
 
 MORSE = {
     ".-":      'A',
@@ -72,7 +74,6 @@ MORSE = {
     "/":       ' ',
 }
 
-F = 790.5 # Hz, pitch of the Morse code audio
 DT = 0.06 # s, base time unit for the Morse code audio
 W = 256 # window size
 window = hann(W, False)
