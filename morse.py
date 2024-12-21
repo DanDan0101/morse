@@ -61,7 +61,7 @@ MORSE = {
     "/":       ' ',
 }
 
-DT = 0.06 # s, base time unit for the Morse code audio
+DT = 0.06 # s, base time unit corresponding to 20 wpm
 W = 2048 # window size
 window = hann(W, False)
 

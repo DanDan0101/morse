@@ -13,10 +13,13 @@ args = parser.parse_args()
 file = args.filename.expanduser().resolve()
 
 rate, data = read(file)
-data = data.mean(axis = 1) # Convert stereo to mono
+if data.ndim == 2:
+    data = data.mean(axis = 1) # Convert stereo to mono
 F = detect_frequency(data, rate)
+print(f"Detected frequency: {F} Hz")
+
 spec = spectrogram(data, rate, F)
-signal = spec > spec.mean() * 0.75
+signal = spec > spec.mean() / 2
 morse = parse(signal, rate)
 message = decode(morse)
 
