@@ -28,6 +28,6 @@ Detected WPM: 20.0 wpm
 3. The [spectrogram](https://en.wikipedia.org/wiki/Spectrogram) is computed every 64 samples as the norm square of the [STFT](https://en.wikipedia.org/wiki/Short-time_Fourier_transform), using a [Hann window](https://en.wikipedia.org/wiki/Hann_function) with width 2048. This is evaluated at the frequency detected in step 2.
 4. The spectrogram is thresholded at half of its mean to convert it to a binary signal.
 5. The times at which the signal changes are computed.
-6. The wpm of the Morse code is detected using a least-squares fit to $\mathrm{min}\left(\left|t-\delta t\right|,\left|t-3\delta t\right|,\left|t-7\delta t\right|\right)$, where $t$ is the time between signal changes. The wpm is computed as $\frac{1200}{\delta t}$.
+6. The wpm of the Morse code is detected using a least-squares fit to $\mathop{min}\left(\left|t-\delta t\right|,\left|t-3\delta t\right|,\left|t-7\delta t\right|\right)$, where $t$ is the time between signal changes. The wpm is computed as $\frac{1200}{\delta t}$.
 7. Discarding any $t<\frac{\delta t}{2}$ as noise, the signal is parsed into a Morse code string.
 8. The Morse code string is decoded to plaintext.
