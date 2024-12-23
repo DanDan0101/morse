@@ -13,21 +13,16 @@ args = parser.parse_args()
 file = args.filename.expanduser().resolve()
 
 rate, data = read(file)
-if data.ndim == 2:
+if data.ndim >= 2:
     data = data.mean(axis = 1) # Convert stereo to mono
 F = detect_frequency(data, rate)
 print(f"Detected frequency: {F} Hz")
 
 spec = spectrogram(data, rate, F)
 signal = spec > spec.mean() / 2
-morse = parse(signal, rate)
+morse, wpm = parse(signal, rate)
+print(f"Detected WPM: {wpm} wpm")
+
 message = decode(morse)
 
 print(message)
-
-"""
-TODO:
-
-* Add rate detection
-* Think about denoising
-"""

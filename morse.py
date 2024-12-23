@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.signal.windows import hann
 from scipy.signal import periodogram
+from scipy.optimize import least_squares
 from numba import njit, prange
 
 MORSE = {
@@ -61,9 +62,9 @@ MORSE = {
     "/":       ' ',
 }
 
-DT = 0.06 # s, base time unit corresponding to 20 wpm
 W = 2048 # window size
 window = hann(W, False)
+HOP = 64
 
 def detect_frequency(data: np.ndarray, rate: float) -> float:
     f, Pxx = periodogram(data, rate)
@@ -87,7 +88,7 @@ def spectrogram_i(i: int, data: np.ndarray, rate: float, f: float) -> np.ndarray
     return np.abs(stft) ** 2
 
 @njit(cache = True, parallel = True)
-def spectrogram(data: np.ndarray, rate: float, f: float, hop: int = 64) -> np.ndarray:
+def spectrogram(data: np.ndarray, rate: float, f: float, hop: int = HOP) -> np.ndarray:
     """
     Compute the spectrogram timeseries of the audio data, every hop samples.
 
@@ -105,7 +106,7 @@ def spectrogram(data: np.ndarray, rate: float, f: float, hop: int = 64) -> np.nd
     S = [spectrogram_i(i * hop, data, rate, f) for i in prange(M)]
     return np.array(S)
 
-def parse(signal: np.ndarray, rate: float) -> str:
+def parse(signal: np.ndarray, rate: float) -> tuple[str, float]:
     """
     Parse the Morse code signal.
 
@@ -115,16 +116,25 @@ def parse(signal: np.ndarray, rate: float) -> str:
 
     Returns:
     str: The parsed Morse code.
+    float: The detected wpm.
     """
     grad = np.nonzero(signal[1:] ^ signal[:-1])[0]
     lasti = 0
     morse = ""
+    diff = np.ediff1d(grad) / rate * HOP
+    def residual(x):
+        diffs = np.stack([np.abs(diff - x[0]), np.abs(diff - 3*x[0]), np.abs(diff - 7*x[0])])
+        return np.min(diffs, axis = 1)
+    dt = least_squares(residual, 0.06).x[0]
+
     for i in grad:
-        diff = (i - lasti) / rate * 64 # hop
-        if diff < 2 * DT:
+        diff = (i - lasti) / rate * HOP
+        if diff < dt / 2:
+            continue
+        if diff < 2 * dt:
             if signal[i] == 1:
                 morse += '.'
-        elif diff < 5 * DT:
+        elif diff < 5 * dt:
             if signal[i] == 1:
                 morse += '-'
             else:
@@ -132,7 +142,7 @@ def parse(signal: np.ndarray, rate: float) -> str:
         else:
             morse += " / "
         lasti = i
-    return morse
+    return morse, 1.2 / dt
 
 def decode(morse: str) -> str:
     """
