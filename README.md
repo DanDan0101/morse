@@ -31,3 +31,9 @@ Detected WPM: 20.0 wpm
 6. The wpm of the Morse code is detected using a least-squares fit to $\mathop{\mathrm{min}}\left(\left|t-\delta t\right|,\left|t-3\delta t\right|,\left|t-7\delta t\right|\right)$, where $t$ is the time between signal changes. The wpm is computed as $\frac{1200}{\delta t}$.
 7. Discarding any $t<\frac{\delta t}{2}$ as noise, the signal is parsed into a Morse code string.
 8. The Morse code string is decoded to plaintext.
+
+## TODO
+
+1. Add automatic decryption for BF1 easter egg ciphers, based on input stage
+2. Port everything to a web app
+3. Improve sensitivity for low S/N ratio data
