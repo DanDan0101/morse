@@ -106,13 +106,14 @@ def spectrogram(data: np.ndarray, rate: float, f: float, hop: int = HOP) -> np.n
     S = [spectrogram_i(i * hop, data, rate, f) for i in prange(M)]
     return np.array(S)
 
-def parse(signal: np.ndarray, rate: float) -> tuple[str, float]:
+def parse(signal: np.ndarray, rate: float, detect_wpm: bool = False) -> tuple[str, float]:
     """
     Parse the Morse code signal.
 
     Parameters:
     signal (np.ndarray): The spectrogram timeseries.
     rate (float): The sample rate of the audio.
+    detect_wpm (bool): Whether to detect the WPM. Default is False.
 
     Returns:
     str: The parsed Morse code.
@@ -122,10 +123,13 @@ def parse(signal: np.ndarray, rate: float) -> tuple[str, float]:
     lasti = 0
     morse = ""
     diff = np.ediff1d(grad) / rate * HOP
-    def residual(x):
-        diffs = np.stack([np.abs(diff - x[0]), np.abs(diff - 3*x[0]), np.abs(diff - 7*x[0])])
-        return np.min(diffs, axis = 1)
-    dt = least_squares(residual, 0.06).x[0]
+    if detect_wpm:
+        def residual(x):
+            diffs = np.stack([np.abs(diff - x[0]), np.abs(diff - 3*x[0]), np.abs(diff - 7*x[0])])
+            return np.min(diffs, axis = 1)
+        dt = least_squares(residual, 0.06).x[0]
+    else:
+        dt = 0.06
 
     for i in grad:
         diff = (i - lasti) / rate * HOP

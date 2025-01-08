@@ -9,8 +9,10 @@ parser = argparse.ArgumentParser(
     epilog = "Hacked together by Daniel Sun"
 )
 parser.add_argument("filename", type = Path)
+parser.add_argument("-w", "--wpm", type = bool, default = False, help = "Whether to trigger WPM detection.")
 args = parser.parse_args()
 file = args.filename.expanduser().resolve()
+detect_wpm = args.wpm
 
 rate, data = read(file)
 if data.ndim >= 2:
@@ -20,7 +22,7 @@ print(f"Detected frequency: {F} Hz")
 
 spec = spectrogram(data, rate, F)
 signal = spec > spec.mean() / 2
-morse, wpm = parse(signal, rate)
+morse, wpm = parse(signal, rate, detect_wpm)
 print(f"Detected WPM: {wpm} wpm")
 
 message = decode(morse)
