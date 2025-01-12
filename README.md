@@ -37,3 +37,4 @@ Detected WPM: 20.0 wpm
 1. Add automatic decryption for BF1 easter egg ciphers, based on input stage
 2. Port everything to a web app
 3. Improve sensitivity for low S/N ratio data
+4. Add support for more file types
