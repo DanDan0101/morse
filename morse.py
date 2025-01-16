@@ -68,8 +68,8 @@ HOP = 64
 
 def detect_frequency(data: np.ndarray, rate: float) -> float:
     f, Pxx = periodogram(data, rate)
-    low = np.argmin(np.abs(f - 750))
-    high = np.argmin(np.abs(f - 850))
+    low = np.argmin(np.abs(f - 700))
+    high = np.argmin(np.abs(f - 1100))
     f = f[low:high]
     Pxx = Pxx[low:high]
     return f[np.argmax(Pxx)]
